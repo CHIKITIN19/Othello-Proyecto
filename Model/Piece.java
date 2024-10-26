@@ -9,5 +9,24 @@ package Model;
  * @author 9567
  */
 public class Piece {
+    private String colors;
+
+    public Piece(String colors) {
+        this.colors = colors;
+    }
+
+    public String getColors() {
+        return colors;
+    }
     
+    //Metodo para voltear color de las fichas
+    public void FlipColors(){
+        if(colors.equals("White")){
+            colors = "Black";
+        }else{
+            if(colors.equals("Black")){
+                colors = "White";
+            }
+        }
+    }
 }
