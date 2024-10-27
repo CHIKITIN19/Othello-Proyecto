@@ -57,5 +57,18 @@ public class Board {
     public void setCurrentPlayer(Player CurrentPlayer) {
         this.CurrentPlayer = CurrentPlayer;
     }
-    
+    //Caso base si sale del tablero, encuentra una posicion vacia
+    //O simplemente no encuentra un rodeo, termina 
+    private boolean Movements(int row, int column, int deltaRow, int deltaColumn, String playerColor, boolean flipPiece){
+        int j = row + deltaRow;
+        int k = column + deltaColumn;
+        
+        if (j<0 || j>=12 || k<0 || k>=12 || board[j][k] == null) {
+            return false;
+        }
+        if(board[j][k].getColors().equals(playerColor)){
+            return flipPiece;
+        }
+        return Movements(j,k, deltaRow, deltaColumn, playerColor, true);
+    }
 }
