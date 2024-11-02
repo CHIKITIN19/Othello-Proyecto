@@ -4,16 +4,21 @@
  */
 package Model;
 
+import Model.Observer.IObserved;
+import Model.Observer.IObserver;
+import java.util.ArrayList;
+
 /**
  *
  * @author 9567
  */
-public class Board {
+public class Board implements IObserved {
     private static Board instance;
     private Player player1;
     private Player player2;
     private Player CurrentPlayer;
     private Piece[][] board;
+    ArrayList<IObserver> observers; 
     
     public Board(){
         board = new Piece[12][12];
@@ -172,5 +177,22 @@ public class Board {
        }
        return count2;
    }
+
+    @Override
+    public void addObserver(IObserver observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void notifyObserver(Board board) {
+        for (IObserver observer:observers) {
+            observer.update(board);
+        }
+    }
+
+    @Override
+    public void removeObserver(IObserver observer) {
+        observers.remove(observer);
+    }
    
 }
