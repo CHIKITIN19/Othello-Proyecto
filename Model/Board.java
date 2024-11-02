@@ -34,6 +34,9 @@ public class Board {
         return instance;
     }
     
+    public static void resetInstance(){
+        instance = null;
+    }
     
 
     public Player getPlayer1() {
