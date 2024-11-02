@@ -9,6 +9,7 @@ package Model;
  * @author 9567
  */
 public class Board {
+    private static Board instance;
     private Player player1;
     private Player player2;
     private Player CurrentPlayer;
@@ -25,6 +26,15 @@ public class Board {
         board[5][6] = new Piece("Black");
         board[6][5] = new Piece("Black");
     }
+
+    public static Board getInstance() {
+        if (instance == null){
+            instance = new Board();
+        }
+        return instance;
+    }
+    
+    
 
     public Player getPlayer1() {
         return player1;
