@@ -12,13 +12,11 @@ import java.util.ArrayList;
  *
  * @author 9567
  */
-public class Board implements IObserved {
-    private static Board instance;
+public class Board{
     private Player player1;
     private Player player2;
     private Player CurrentPlayer;
-    private Piece[][] board;
-    ArrayList<IObserver> observers; 
+    private Piece[][] board; 
     
     public Board(){
         board = new Piece[12][12];
@@ -31,18 +29,6 @@ public class Board implements IObserved {
         board[5][6] = new Piece("Black");
         board[6][5] = new Piece("Black");
     }
-
-    public static Board getInstance() {
-        if (instance == null){
-            instance = new Board();
-        }
-        return instance;
-    }
-    
-    public static void resetInstance(){
-        instance = null;
-    }
-    
 
     public Player getPlayer1() {
         return player1;
@@ -177,22 +163,5 @@ public class Board implements IObserved {
        }
        return count2;
    }
-
-    @Override
-    public void addObserver(IObserver observer) {
-        observers.add(observer);
-    }
-
-    @Override
-    public void notifyObserver(Board board) {
-        for (IObserver observer:observers) {
-            observer.update(board);
-        }
-    }
-
-    @Override
-    public void removeObserver(IObserver observer) {
-        observers.remove(observer);
-    }
-   
+ 
 }
