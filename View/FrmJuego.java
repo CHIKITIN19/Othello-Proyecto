@@ -11,7 +11,7 @@ import javax.swing.JButton;
  *
  * @author Dering
  */
-public class FrmJuego extends javax.swing.JFrame {
+public class FrmJuego extends javax.swing.JFrame implements Vista {
     public JButton[][] botonesTablero;
     private BoardManagerController controller;
     /**
@@ -19,6 +19,14 @@ public class FrmJuego extends javax.swing.JFrame {
      */
     public FrmJuego() {
         initComponents();
+    }
+    
+    public void UpdateShift(){
+        
+    }
+    
+    public void UpdateGameScore(){
+        
     }
 
     /**
@@ -637,4 +645,14 @@ public class FrmJuego extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void showMessage(String message) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public void show(Object object) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

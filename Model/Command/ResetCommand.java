@@ -5,20 +5,29 @@
 package Model.Command;
 
 import Model.Board;
+import View.FrmJuego;
+import java.awt.Color;
 
 /**
  *
  * @author sebas
  */
 public class ResetCommand extends BoardCommand {
+    FrmJuego frmJuego;
 
-    public ResetCommand(Board board) {
+    public ResetCommand(FrmJuego frmJuego,Board board) {
         super(board);
+        this.frmJuego = frmJuego;
     }
 
     @Override
     public void execute() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                frmJuego.botonesTablero[i][j].setIcon(null);
+                frmJuego.botonesTablero[i][j].setBackground(Color.WHITE);
+            }
+        }
     }
     
 }

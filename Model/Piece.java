@@ -21,11 +21,11 @@ public class Piece {
     
     //Metodo para voltear color de las fichas
     public void FlipColors(){
-        if(colors.equals("White")){
-            colors = "Black";
+        if(colors.equals("Red")){
+            colors = "Purple";
         }else{
-            if(colors.equals("Black")){
-                colors = "White";
+            if(colors.equals("Purple")){
+                colors = "Red";
             }
         }
     }

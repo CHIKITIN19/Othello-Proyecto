@@ -34,6 +34,18 @@ public class BoardManager implements IObserved {
         instance = null;
     }
     
+    public Player getPlayer1(){
+        return board.getPlayer1();
+    }
+    
+    public Player getPlayer2(){
+        return board.getPlayer2();
+    }
+    
+    public Player getCurrentPlayer(){
+        return board.getCurrentPlayer();
+    }
+    
     
      @Override
     public void addObserver(IObserver observer) {
@@ -114,13 +126,27 @@ public class BoardManager implements IObserved {
             newColumn += deltaColumn;
         }
     }
+    
+    public int possibleMovement(String color){
+        int count = 0;
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                if (isValidMove(i,j)) {
+                    if (board.getCurrentPlayer().getColors().equals(color)) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
 
     public void changeTurn() {
         board.setCurrentPlayer(
             board.getCurrentPlayer() == board.getPlayer1() ? board.getPlayer2() : board.getPlayer1()
         );
     }
-
+    
     // Cuenta las piezas de juagdor1
     public int countPlayer1Pieces() {
         int count = 0;
