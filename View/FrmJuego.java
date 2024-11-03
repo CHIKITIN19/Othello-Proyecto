@@ -24,7 +24,6 @@ import javax.swing.JOptionPane;
 public class FrmJuego extends javax.swing.JFrame implements Vista, IObserver{
     public JButton[][] botonesTablero;
     private BoardManagerController controller;
-    private FrmJuego frmJuego;
     private Board board;
     /**
      * Creates new form FrmJuego
@@ -32,26 +31,31 @@ public class FrmJuego extends javax.swing.JFrame implements Vista, IObserver{
     public FrmJuego() {
         botonesTablero = new JButton[12][12];
         controller = BoardManagerController.getInstance(null, this, this);
-        Board board = new Board();
+        board = new Board();
         controller.setBoard(board);
         initComponents();
         Component[] components = jPanel2.getComponents(); 
-        final int file = 0;
-        final int row = 0;
-        BoardCommand command = new MakeMovementCommand(frmJuego, controller, board, file, row);
-        BoardCommand command2 = new UpdateBoardCommand(frmJuego, board);
         int buttonIndex = 0; 
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 12; j++) {
-                if (components[buttonIndex] instanceof JButton) {
-                    botonesTablero[i][j] = (JButton) components[buttonIndex];
-                    botonesTablero[i][j].addActionListener(e -> controller.executeCommand(command));
-                    buttonIndex++;
-                }
-            }
+            if (components[buttonIndex] instanceof JButton) {
+            botonesTablero[i][j] = (JButton) components[buttonIndex];
+
+            // Declarar variables finales para la lambda
+            final int row = i;
+            final int col = j;
+
+            botonesTablero[row][col].addActionListener(e -> {
+                BoardCommand command = new MakeMovementCommand(this, controller, board, row, col); // Usar row y col
+                controller.executeCommand(command);
+            });
+            buttonIndex++;
         }
-        controller.executeCommand(command2);
     }
+  }
+        BoardCommand command2 = new UpdateBoardCommand(this, board);  // Usar this
+        controller.executeCommand(command2);
+ }
 
     @Override
     public void update(Board board) {
@@ -508,8 +512,8 @@ public class FrmJuego extends javax.swing.JFrame implements Vista, IObserver{
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton145ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton145ActionPerformed
-        BoardCommand command = new UpdateBoardCommand(frmJuego, board);
-        BoardCommand command2 = new ResetCommand(frmJuego, board);
+        BoardCommand command = new UpdateBoardCommand(this, board);
+        BoardCommand command2 = new ResetCommand(this, board);
         BoardCommand command3 = new AddPlayersName(board);
         int option = JOptionPane.showInternalConfirmDialog(null, "¡Desea reiniciar el tablero?", "Advertencia", JOptionPane.YES_NO_OPTION);
         if (option == JOptionPane.YES_OPTION) {
