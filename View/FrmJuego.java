@@ -5,28 +5,73 @@
 package View;
 
 import Controller.BoardManagerController;
+import Model.Board;
+import Model.Command.AddPlayersName;
+import Model.Command.BoardCommand;
+import Model.Command.MakeMovementCommand;
+import Model.Command.ResetCommand;
+import Model.Command.UpdateBoardCommand;
+import Model.Observer.IObserver;
+import Model.Player;
+import java.awt.Component;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author Dering
  */
-public class FrmJuego extends javax.swing.JFrame implements Vista {
+public class FrmJuego extends javax.swing.JFrame implements Vista, IObserver{
     public JButton[][] botonesTablero;
     private BoardManagerController controller;
+    private FrmJuego frmJuego;
+    private Board board;
     /**
      * Creates new form FrmJuego
      */
     public FrmJuego() {
+        botonesTablero = new JButton[12][12];
+        controller = BoardManagerController.getInstance(null, this, this);
+        Board board = new Board();
+        controller.setBoard(board);
         initComponents();
+        Component[] components = jPanel2.getComponents(); 
+        final int file = 0;
+        final int row = 0;
+        BoardCommand command = new MakeMovementCommand(frmJuego, controller, board, file, row);
+        BoardCommand command2 = new UpdateBoardCommand(frmJuego, board);
+        int buttonIndex = 0; 
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                if (components[buttonIndex] instanceof JButton) {
+                    botonesTablero[i][j] = (JButton) components[buttonIndex];
+                    botonesTablero[i][j].addActionListener(e -> controller.executeCommand(command));
+                    buttonIndex++;
+                }
+            }
+        }
+        controller.executeCommand(command2);
+    }
+
+    @Override
+    public void update(Board board) {
+        
     }
     
+    
+    
     public void UpdateShift(){
-        
+        Player playerCurrent = controller.getPlayerCurrent();
+        TxtTurno.setText("Turno de " + playerCurrent.getName());
     }
     
     public void UpdateGameScore(){
-        
+       int TokensPlayer1 = controller.countTokensPlayer();
+       int TokensPlayer2 = controller.countTokensPlayer2();
+    
+       Puntaje.setText("Puntaje");
+       Player1.setText(controller.getPlayer1().getName() + ": " + TokensPlayer1);
+       Player2.setText(controller.getPlayer2().getName() + ": " + TokensPlayer2);
     }
 
     /**
@@ -184,10 +229,10 @@ public class FrmJuego extends javax.swing.JFrame implements Vista {
         jButton143 = new javax.swing.JButton();
         jButton144 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        Puntaje = new javax.swing.JLabel();
+        Player1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        Player2 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jButton145 = new javax.swing.JButton();
@@ -351,19 +396,19 @@ public class FrmJuego extends javax.swing.JFrame implements Vista {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jLabel1.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
-        jLabel1.setText("Puntaje");
+        Puntaje.setFont(new java.awt.Font("Times New Roman", 1, 36)); // NOI18N
+        Puntaje.setText("Puntaje");
 
-        jLabel2.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("Jugador#1");
+        Player1.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Player1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Player1.setText("Jugador#1");
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Ficha_1.png"))); // NOI18N
         jLabel3.setText("jLabel3");
 
-        jLabel4.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Jugador#2");
+        Player2.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Player2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        Player2.setText("Jugador#2");
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/Ficha_2.png"))); // NOI18N
         jLabel5.setText("jLabel3");
@@ -372,55 +417,63 @@ public class FrmJuego extends javax.swing.JFrame implements Vista {
         jLabel6.setText("Turno de: ");
 
         jButton145.setIcon(new javax.swing.ImageIcon(getClass().getResource("/IMG/reiniciar (1).png"))); // NOI18N
+        jButton145.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton145ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(18, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
+                        .addComponent(Puntaje)
                         .addGap(28, 28, 28))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(58, 58, 58))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(57, 57, 57))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton145, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6))
-                        .addGap(33, 33, 33))))
+                        .addGap(49, 49, 49))))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(39, 39, 39)
-                .addComponent(TxtTurno, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Player1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(Player2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(16, 16, 16)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(TxtTurno, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel6))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(jButton145, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
+                .addComponent(Puntaje)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Player1, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(Player2, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TxtTurno, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton145)
-                .addContainerGap(289, Short.MAX_VALUE))
+                .addContainerGap(283, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -453,6 +506,24 @@ public class FrmJuego extends javax.swing.JFrame implements Vista {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton145ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton145ActionPerformed
+        BoardCommand command = new UpdateBoardCommand(frmJuego, board);
+        BoardCommand command2 = new ResetCommand(frmJuego, board);
+        BoardCommand command3 = new AddPlayersName(board);
+        int option = JOptionPane.showInternalConfirmDialog(null, "¡Desea reiniciar el tablero?", "Advertencia", JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.YES_OPTION) {
+            controller.executeCommand(command2);
+            controller.createBoard();
+            controller.executeCommand(command);
+            controller.executeCommand(command3);
+            UpdateGameScore();
+            JOptionPane.showMessageDialog(this, "Tablero reiniciado", "Reinicio", JOptionPane.INFORMATION_MESSAGE);
+            UpdateShift();
+        } else {
+            showMessage("¡No se reinició el tablero!");
+        } 
+    }//GEN-LAST:event_jButton145ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -490,6 +561,9 @@ public class FrmJuego extends javax.swing.JFrame implements Vista {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel Player1;
+    private javax.swing.JLabel Player2;
+    private javax.swing.JLabel Puntaje;
     private javax.swing.JLabel TxtTurno;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
@@ -636,10 +710,7 @@ public class FrmJuego extends javax.swing.JFrame implements Vista {
     private javax.swing.JButton jButton97;
     private javax.swing.JButton jButton98;
     private javax.swing.JButton jButton99;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
@@ -648,7 +719,7 @@ public class FrmJuego extends javax.swing.JFrame implements Vista {
 
     @Override
     public void showMessage(String message) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        JOptionPane.showMessageDialog(this, message, "Mensaje", JOptionPane.INFORMATION_MESSAGE);
     }
 
     @Override

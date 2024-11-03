@@ -4,9 +4,7 @@
  */
 package Model;
 
-import Model.Observer.IObserved;
-import Model.Observer.IObserver;
-import java.util.ArrayList;
+import Controller.BoardManagerController;
 
 /**
  *
@@ -16,9 +14,10 @@ public class Board{
     private Player player1;
     private Player player2;
     private Player currentPlayer;
-    private Piece[][] board; 
+    private Piece[][] board;
+    private BoardManagerController controller;
     
-    public Board() {
+    public Board(BoardManagerController controller) {
         board = new Piece[12][12];
         player1 = new Player("White", "Player 1");
         player2 = new Player("Black", "Player 2");
@@ -30,6 +29,12 @@ public class Board{
         board[5][6] = new Piece("Black");
         board[6][5] = new Piece("Black");
     }
+
+    public Board() {
+        this(null);
+    }
+    
+    
 
     public void setPlayer1(Player player1) {
         this.player1 = player1;
