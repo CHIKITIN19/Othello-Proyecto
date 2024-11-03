@@ -19,15 +19,15 @@ public class Board{
     
     public Board(BoardManagerController controller) {
         board = new Piece[12][12];
-        player1 = new Player("White", "Player 1");
-        player2 = new Player("Black", "Player 2");
+        player1 = new Player("Red", "Player 1");
+        player2 = new Player("Purple", "Player 2");
         currentPlayer = player1;
         
         // Lugar donde las fichas inician
-        board[5][5] = new Piece("White");
-        board[6][6] = new Piece("White");
-        board[5][6] = new Piece("Black");
-        board[6][5] = new Piece("Black");
+        board[5][5] = new Piece("Red");
+        board[6][6] = new Piece("Red");
+        board[5][6] = new Piece("Purple");
+        board[6][5] = new Piece("Purple");
     }
 
     public Board() {

@@ -9,6 +9,7 @@ import Model.Observer.IObserver;
 import Model.Player;
 import View.FrmJuego;
 import View.Vista;
+import javax.swing.JOptionPane;
 
 public class BoardManagerController {
     private Vista view;
@@ -91,4 +92,29 @@ public class BoardManagerController {
     public void executeCommand(BoardCommand command){
         command.execute();
     } 
+    public void hacerMovimiento(int fila, int columna) {
+        try {
+        if (boardManager.isValidMove(fila, columna)) { // Verifica si el movimiento es válido
+            boardManager.placePiece(fila, columna); // Coloca la ficha en el tablero
+            executeCommand(new UpdateBoardCommand(frmJuego, board)); // Actualiza el tablero visual
+            
+            // Verifica si hay movimientos posibles para el jugador actual
+            if (boardManager.possibleMovement(boardManager.getCurrentPlayer().getColors()) == 0) {
+                Player ganador = setWinner(); // Determina el ganador
+                if (ganador != null) {
+                    view.show(ganador.getName()+ " ha ganado");
+                } else {
+                    view.show("¡Empate!");
+                }
+            } else {
+                boardManager.changeTurn(); // Cambia el turno al siguiente jugador
+            }
+        } else {
+            view.show("Movimiento no válido. Intente de nuevo."); // Mensaje de error
+        }
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
 }
