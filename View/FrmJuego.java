@@ -32,7 +32,6 @@ public class FrmJuego extends javax.swing.JFrame implements Vista{
         int TokensPlayer2 = controller.countTokensPlayer2();
         Player1.setText(name1 + ":" + TokensPlayer1);
         Player2.setText(name2 + ":" + TokensPlayer2);
-        Player2.setText(name2);
         Component[] compo = jPanel2.getComponents();
         int button = 0;
 
