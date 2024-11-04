@@ -20,8 +20,8 @@ public class BoardManager {
     
     public BoardManager() {
         board = new Piece[12][12];
-        player1 = new Player("Red", "Player 1");
-        player2 = new Player("Purple", "Player 2");
+        player1 = new Player("Red");
+        player2 = new Player("Purple");
         currentPlayer = player1;
         
         // Inicializar el tablero con las piezas iniciales
