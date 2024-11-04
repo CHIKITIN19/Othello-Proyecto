@@ -91,22 +91,22 @@ public class BoardManagerController {
                     ? boardManager.getBoard()[fila][columna].getColors() 
                     : null;
 
-                boardManager.placePiece(fila, columna); // Coloca la ficha
+                boardManager.placePiece(fila, columna);
 
-                // Aquí animas el cambio de color de las piezas capturadas
                 for (int i = -1; i <= 1; i++) {
                     for (int j = -1; j <= 1; j++) {
-                        if (i == 0 && j == 0) continue; // Ignorar la posición actual
+                        if (i == 0 && j == 0) 
+                            continue; 
                         if (boardManager.validateCapture(fila, columna, i, j, boardManager.getCurrentPlayer().getColors(), false)) {
-                            // Llamar a la animación para cada ficha que se capturó
+                            
                             animateCapturedPieces(fila, columna, i, j, colorActual);
                         }
                     }
                 }
 
-                updateBoard(); // Actualiza la visualización del tablero
-                frmJuego.UpdateShift(); // Actualiza el turno en la interfaz
-                frmJuego.UpdateGameScore(); // Actualiza el marcador en la interfaz
+                updateBoard(); 
+                frmJuego.UpdateShift(); 
+                frmJuego.UpdateGameScore(); 
                 
                 // Verifica si hay movimientos posibles para el jugador actual
                 if (boardManager.possibleMovement(boardManager.getCurrentPlayer().getColors()) == 0) {
@@ -129,7 +129,7 @@ public class BoardManagerController {
 
         while (boardManager.getBoard()[newRow][newColumn] != null && 
                !boardManager.getBoard()[newRow][newColumn].getColors().equals(colorActual)) {
-            // Aquí llamas a la animación
+            
             String colorFinal = boardManager.getCurrentPlayer().getColors();
             animation.animarCambioFicha(newRow, newColumn, colorFinal);
             newRow += deltaRow;
@@ -149,14 +149,14 @@ public class BoardManagerController {
             for (int j = 0; j < 12; j++) {
                 JButton boton = frmJuego.botonesTablero[i][j];
                 if (currentBoard[i][j] != null) {
-                    // Cambiar el ícono del botón de acuerdo al color de la ficha
+                    
                     if (currentBoard[i][j].getColors().equals("Red")) {
                         boton.setIcon(redPiece);
                     } else {
                         boton.setIcon(purplePiece);
                     }
                 } else {
-                    // Si no hay ficha, limpiar el ícono y actualizar el color de fondo
+                    
                     boton.setIcon(null);
                     if (boardManager.isValidMove(i, j)) {
                         boton.setBackground(Color.BLUE);
@@ -167,7 +167,7 @@ public class BoardManagerController {
             }
         }
 
-        // Actualizar turno y marcador después de actualizar el tablero
+        
         frmJuego.UpdateShift();
         frmJuego.UpdateGameScore();
     }
