@@ -17,6 +17,8 @@ import javax.swing.JOptionPane;
  */
 public class FrmJuego extends javax.swing.JFrame implements Vista{
     public JButton[][] botonesTablero;
+    private String player1Name;
+    private String player2Name;
     private BoardManagerController controller;
   
     /**
@@ -25,13 +27,12 @@ public class FrmJuego extends javax.swing.JFrame implements Vista{
      * @param name2
      */
     public FrmJuego(String name1, String name2) {
+        this.player1Name = name1;
+        this.player2Name = name2;
         controller = BoardManagerController.getInstance(this, this);
         botonesTablero = new JButton[12][12];
         initComponents();
-        int TokensPlayer1 = controller.countTokensPlayer();
-        int TokensPlayer2 = controller.countTokensPlayer2();
-        Player1.setText(name1 + ":" + TokensPlayer1);
-        Player2.setText(name2 + ":" + TokensPlayer2);
+        
         Component[] compo = jPanel2.getComponents();
         int button = 0;
 
@@ -63,12 +64,12 @@ public class FrmJuego extends javax.swing.JFrame implements Vista{
     }
     
     public void UpdateGameScore(){
-//       int TokensPlayer1 = controller.countTokensPlayer();
-//       int TokensPlayer2 = controller.countTokensPlayer2();
+       int TokensPlayer1 = controller.countTokensPlayer();
+       int TokensPlayer2 = controller.countTokensPlayer2();
 //    
        Puntaje.setText("Puntaje");
-//       Player1.setText(controller.getPlayer1().getName() + ": " + TokensPlayer1);
-//       Player2.setText(controller.getPlayer2().getName() + ": " + TokensPlayer2);
+       Player1.setText(player1Name  + ": " + TokensPlayer1);
+       Player2.setText(player2Name + ": " + TokensPlayer2);
     }
 
     /**
