@@ -4,14 +4,14 @@
  */
 package Model.Observer;
 
-import Model.Board;
-
-/**
- *
- * @author sebas
- */
-public interface IObserved {
-    public void addObserver(IObserver observer);
-    public void notifyObserver(Board board);
-    public void removeObserver(IObserver observer);
-}
+//import Model.Board;
+//
+///**
+// *
+// * @author sebas
+// */
+//public interface IObserved {
+//    public void addObserver(IObserver observer);
+//    public void notifyObserver(Board board);
+//    public void removeObserver(IObserver observer);
+//}

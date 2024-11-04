@@ -29,4 +29,9 @@ public class Piece {
             }
         }
     }
+
+    public void setColors(String colors) {
+        this.colors = colors;
+    }
+    
 }

@@ -8,6 +8,7 @@ import Controller.BoardManagerController;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -16,64 +17,60 @@ import javax.swing.JButton;
 public class AnimationPiece {
     private final BoardManagerController controller;
     private final String[] secuenciaNegra = {
-        "/IMG/fichaVolteo2.png",
-        "/IMG/fichaVolteo2.png",
-        "/IMG/ficha_1png"
+        "/IMG/Ficha_1.png",
+        "/IMG/Ficha_1.png",
+        "/IMG/Ficha_1.png"
     };
     
     private final String[] secuenciaRoja = {
-        "/IMG/fichaVolteo.png",
-        "/IMG/fichaVolteo.png",
-        "/IMG/ficha2.png"
+        "/IMG/Ficha_2.png",
+        "/IMG/Ficha_2.png",
+        "/IMG/Ficha_1.png"
     };
 
     public AnimationPiece(BoardManagerController controller) {
         this.controller = controller;
     }
     
-//    public void animarCambioFicha(int fila, int columna, String colorFinal) {
-//    new Thread(() -> {
-//        try {
-//            //el getOthello es el controller
-//            //al igual que el getTablero
-//            JButton boton = controller.getOthello().botonesTablero[fila][columna];
-//            boton.putClientProperty("enAnimacion", true); // Iniciar la animación
-//            
-//            // Verificamos el color de la ficha en el tablero antes de la animación
-//            String colorActual = controller.getTablero().getTablero()[fila][columna].getColor();
-//            String[] secuencia;
-//
-//            
-//            if (colorActual.equals("FICHA ROJA") && colorFinal.equals("FICHA NEGRA")) {
-//                secuencia = secuenciaNegra; // Animación de ficha negra
-//            } else if (colorActual.equals("FICHA NEGRA") && colorFinal.equals("FICHA ROJA")) {
-//                secuencia = secuenciaRoja; // Animación de ficha roja
-//            } else {
-//                secuencia = colorFinal.equals("FICHA NEGRA") ? secuenciaNegra : secuenciaRoja;
-//            }
-//
-//            for (String rutaImagen : secuencia) {
-//                ImageIcon iconoOriginal = new ImageIcon(getClass().getResource(rutaImagen));
-//                Image imagen = iconoOriginal.getImage();
-//                Image nuevaImagen = imagen.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-//                ImageIcon iconoFinal = new ImageIcon(nuevaImagen);
-//
-//                boton.setIcon(iconoFinal);
-//                Thread.sleep(800);
-//            }
-//
-//            // Actualizar el estado de la ficha en el tablero
-//            //para el controller
-//            controller.getTablero().getTablero()[fila][columna].setColor(colorFinal);
-//
-//            // Finalmente, actualiza el tablero para reflejar los cambios
-//            //para el controller
-//            controller.updateTablero();
-//
-//            boton.putClientProperty("enAnimacion", false); // Finalizar la animación
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }).start();
-//}
+   public void animarCambioFicha(int fila, int columna, String colorFinal) {
+        new Thread(() -> {
+            try {
+                JButton boton = controller.getFrmJuego().botonesTablero[fila][columna];
+                boton.putClientProperty("enAnimacion", true);
+
+                // Determinar la secuencia de animación
+                String colorActual = controller.getBoardManager().getBoard()[fila][columna].getColors();
+                String[] secuencia;
+
+                if (colorActual.equals("Red") && colorFinal.equals("Purple")) {
+                    secuencia = secuenciaRoja; // Cambiar de rojo a negro
+                } else if (colorActual.equals("Purple") && colorFinal.equals("Red")) {
+                    secuencia = secuenciaNegra; // Cambiar de negro a rojo
+                } else {
+                    // Si no es una conversión válida, simplemente salimos
+                    return;
+                }
+
+                // Animación de cambio de color
+                for (String rutaImagen : secuencia) {
+                    ImageIcon iconoOriginal = new ImageIcon(getClass().getResource(rutaImagen));
+                    Image imagen = iconoOriginal.getImage();
+                    Image nuevaImagen = imagen.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                    ImageIcon iconoFinal = new ImageIcon(nuevaImagen);
+
+                    SwingUtilities.invokeLater(() -> boton.setIcon(iconoFinal));
+                    Thread.sleep(400); // Tiempo entre cada cambio de imagen
+                }
+
+                // Actualizar el color final de la ficha en el tablero
+                controller.getBoardManager().getBoard()[fila][columna].setColors(colorFinal);
+                // Actualiza la visualización del tablero
+                controller.updateBoard();
+                boton.putClientProperty("enAnimacion", false);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 }

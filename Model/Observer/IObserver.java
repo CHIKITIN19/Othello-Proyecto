@@ -4,12 +4,12 @@
  */
 package Model.Observer;
 
-import Model.Board;
-
-/**
- *
- * @author sebas
- */
-public interface IObserver {
-    public void update(Board board);
-}
+//import Model.Board;
+//
+///**
+// *
+// * @author sebas
+// */
+//public interface IObserver {
+//    public void update(Board board);
+//}

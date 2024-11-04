@@ -5,13 +5,7 @@
 package View;
 
 import Controller.BoardManagerController;
-import Model.Board;
-import Model.Command.AddPlayersName;
-import Model.Command.BoardCommand;
-import Model.Command.MakeMovementCommand;
-import Model.Command.ResetCommand;
-import Model.Command.UpdateBoardCommand;
-import Model.Observer.IObserver;
+
 import Model.Player;
 import java.awt.Component;
 import javax.swing.JButton;
@@ -21,46 +15,36 @@ import javax.swing.JOptionPane;
  *
  * @author Dering
  */
-public class FrmJuego extends javax.swing.JFrame implements Vista, IObserver{
+public class FrmJuego extends javax.swing.JFrame implements Vista{
     public JButton[][] botonesTablero;
     private BoardManagerController controller;
-    private Board board;
+  
     /**
      * Creates new form FrmJuego
      */
     public FrmJuego() {
+        controller = BoardManagerController.getInstance(this, this);
         botonesTablero = new JButton[12][12];
-        controller = BoardManagerController.getInstance(null, this, this);
-        board = new Board();
-        controller.setBoard(board);
         initComponents();
-        Component[] components = jPanel2.getComponents(); 
-        int buttonIndex = 0; 
+
+        Component[] compo = jPanel2.getComponents();
+        int button = 0;
+
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 12; j++) {
-            if (components[buttonIndex] instanceof JButton) {
-            botonesTablero[i][j] = (JButton) components[buttonIndex];
-
-            // Declarar variables finales para la lambda
-            final int row = i;
-            final int col = j;
-
-            botonesTablero[row][col].addActionListener(e -> {
-                BoardCommand command = new MakeMovementCommand(this, controller, board, row, col); // Usar row y col
-                controller.executeCommand(command);
-            });
-            buttonIndex++;
+                if (compo[button] instanceof JButton) {
+                    botonesTablero[i][j] = (JButton) compo[button];
+                    final int row = i;
+                    final int col = j;
+                    botonesTablero[i][j].addActionListener(e -> controller.hacerMovimiento(row, col));
+                    button++;
+                }
+            }
         }
+        controller.updateBoard(); // Actualiza la visualización del tablero al inicio
     }
-  }
-        BoardCommand command2 = new UpdateBoardCommand(this, board);  // Usar this
-        controller.executeCommand(command2);
- }
 
-    @Override
-    public void update(Board board) {
-        
-    }
+
     
     
     
@@ -512,21 +496,7 @@ public class FrmJuego extends javax.swing.JFrame implements Vista, IObserver{
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton145ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton145ActionPerformed
-        BoardCommand command = new UpdateBoardCommand(this, board);
-        BoardCommand command2 = new ResetCommand(this, board);
-        BoardCommand command3 = new AddPlayersName(board);
-        int option = JOptionPane.showInternalConfirmDialog(null, "¡Desea reiniciar el tablero?", "Advertencia", JOptionPane.YES_NO_OPTION);
-        if (option == JOptionPane.YES_OPTION) {
-            controller.executeCommand(command2);
-            controller.createBoard();
-            controller.executeCommand(command);
-            controller.executeCommand(command3);
-            UpdateGameScore();
-            JOptionPane.showMessageDialog(this, "Tablero reiniciado", "Reinicio", JOptionPane.INFORMATION_MESSAGE);
-            UpdateShift();
-        } else {
-            showMessage("¡No se reinició el tablero!");
-        } 
+
     }//GEN-LAST:event_jButton145ActionPerformed
 
     /**

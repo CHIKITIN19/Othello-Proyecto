@@ -1,43 +1,45 @@
 package Controller;
 
 import Model.AnimationPiece;
-import Model.Board;
 import Model.BoardManager;
-import Model.Command.BoardCommand;
-import Model.Command.UpdateBoardCommand;
-import Model.Observer.IObserver;
+
+import Model.Piece;
 import Model.Player;
 import View.FrmJuego;
 import View.Vista;
+import java.awt.Color;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 public class BoardManagerController {
     private Vista view;
     private BoardManager boardManager;
-    private Board board;
     private FrmJuego frmJuego;
     private static BoardManagerController instance;
     private AnimationPiece animation;
 
-    public BoardManagerController(Board board, FrmJuego frmJuego, Vista view) {
-        boardManager = BoardManager.getInstance();
-        this.view = view;
-        this.animation = new AnimationPiece(this);
-        this.board = board;
-        this.frmJuego = frmJuego;
-        if (view instanceof IObserver iObserver) {
-            boardManager.addObserver(iObserver);
-        }
+    public BoardManager getBoardManager() {
+        return boardManager;
     }
     
-    public static BoardManagerController getInstance(Board board, FrmJuego frmJuego, Vista view) {
+
+    public BoardManagerController(FrmJuego frmJuego, Vista view) {
+        boardManager = BoardManager.getInstance();
+        this.view = view;
+        this.frmJuego = frmJuego;
+        this.animation = new AnimationPiece(this);
+    }
+    
+    public static BoardManagerController getInstance(FrmJuego frmJuego, Vista view) {
         if (instance == null) {
-            instance = new BoardManagerController(board, frmJuego, view);
+            instance = new BoardManagerController(frmJuego, view);
         }
         return instance;
     }
     
-    public Player setWinner(){
+    public Player setWinner() {
         int chipsPlayer1 = boardManager.countPlayer1Pieces();
         int chipsPlayer2 = boardManager.countPlayer2Pieces();
 
@@ -56,29 +58,20 @@ public class BoardManagerController {
     }
     
     public void createBoard() {
-        BoardCommand command = new UpdateBoardCommand(frmJuego, board);
-        board = new Board(this);
-        executeCommand(command);
+        // Ya no es necesario, ya que el tablero se crea en BoardManager
+        updateBoard();
     }
 
-    public Board getBoard() {
-        return board;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-    
     public Player getPlayer1() {
-        return board.getPlayer1();
+        return boardManager.getPlayer1();
     }
 
     public Player getPlayer2() {
-        return board.getPlayer2();
+        return boardManager.getPlayer2();
     }
 
     public Player getPlayerCurrent() {
-        return board.getCurrentPlayer();
+        return boardManager.getCurrentPlayer();
     }
 
     public int countTokensPlayer() {
@@ -89,32 +82,97 @@ public class BoardManagerController {
         return boardManager.countPlayer2Pieces();
     }
     
-    public void executeCommand(BoardCommand command){
-        command.execute();
-    } 
+ 
+    
     public void hacerMovimiento(int fila, int columna) {
         try {
-        if (boardManager.isValidMove(fila, columna)) { // Verifica si el movimiento es válido
-            boardManager.placePiece(fila, columna); // Coloca la ficha en el tablero
-            executeCommand(new UpdateBoardCommand(frmJuego, board)); // Actualiza el tablero visual
-            
-            // Verifica si hay movimientos posibles para el jugador actual
-            if (boardManager.possibleMovement(boardManager.getCurrentPlayer().getColors()) == 0) {
-                Player ganador = setWinner(); // Determina el ganador
-                if (ganador != null) {
-                    view.show(ganador.getName()+ " ha ganado");
-                } else {
-                    view.show("¡Empate!");
-                }
-            } else {
-                boardManager.changeTurn(); // Cambia el turno al siguiente jugador
-            }
-        } else {
-            view.show("Movimiento no válido. Intente de nuevo."); // Mensaje de error
-        }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
-}
+            if (boardManager.isValidMove(fila, columna)) { // Verifica si el movimiento es válido
+                String colorActual = boardManager.getBoard()[fila][columna] != null 
+                    ? boardManager.getBoard()[fila][columna].getColors() 
+                    : null;
 
+                boardManager.placePiece(fila, columna); // Coloca la ficha
+
+                // Aquí animas el cambio de color de las piezas capturadas
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        if (i == 0 && j == 0) continue; // Ignorar la posición actual
+                        if (boardManager.validateCapture(fila, columna, i, j, boardManager.getCurrentPlayer().getColors(), false)) {
+                            // Llamar a la animación para cada ficha que se capturó
+                            animateCapturedPieces(fila, columna, i, j, colorActual);
+                        }
+                    }
+                }
+
+                updateBoard(); // Actualiza la visualización del tablero
+                frmJuego.UpdateShift(); // Actualiza el turno en la interfaz
+                frmJuego.UpdateGameScore(); // Actualiza el marcador en la interfaz
+                
+                // Verifica si hay movimientos posibles para el jugador actual
+                if (boardManager.possibleMovement(boardManager.getCurrentPlayer().getColors()) == 0) {
+                    Player ganador = setWinner(); // Determina el ganador
+                    if (ganador != null) {
+                        view.show(ganador.getName() + " ha ganado");
+                    } else {
+                        view.show("¡Empate!");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void animateCapturedPieces(int fila, int columna, int deltaRow, int deltaColumn, String colorActual) {
+        int newRow = fila + deltaRow;
+        int newColumn = columna + deltaColumn;
+
+        while (boardManager.getBoard()[newRow][newColumn] != null && 
+               !boardManager.getBoard()[newRow][newColumn].getColors().equals(colorActual)) {
+            // Aquí llamas a la animación
+            String colorFinal = boardManager.getCurrentPlayer().getColors();
+            animation.animarCambioFicha(newRow, newColumn, colorFinal);
+            newRow += deltaRow;
+            newColumn += deltaColumn;
+        }
+    }
+    public synchronized void updateBoard() {
+        Piece[][] currentBoard = boardManager.getBoard(); // Accede al tablero desde BoardManager
+        ImageIcon redPieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_1.png"));
+        ImageIcon purplePieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_2.png"));
+        Image redImage = redPieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        Image purpleImage = purplePieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        ImageIcon redPiece = new ImageIcon(redImage);
+        ImageIcon purplePiece = new ImageIcon(purpleImage);
+
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                JButton boton = frmJuego.botonesTablero[i][j];
+                if (currentBoard[i][j] != null) {
+                    // Cambiar el ícono del botón de acuerdo al color de la ficha
+                    if (currentBoard[i][j].getColors().equals("Red")) {
+                        boton.setIcon(redPiece);
+                    } else {
+                        boton.setIcon(purplePiece);
+                    }
+                } else {
+                    // Si no hay ficha, limpiar el ícono y actualizar el color de fondo
+                    boton.setIcon(null);
+                    if (boardManager.isValidMove(i, j)) {
+                        boton.setBackground(Color.BLUE);
+                    } else {
+                        boton.setBackground(Color.GREEN);
+                    }
+                }
+            }
+        }
+
+        // Actualizar turno y marcador después de actualizar el tablero
+        frmJuego.UpdateShift();
+        frmJuego.UpdateGameScore();
+    }
+
+    public FrmJuego getFrmJuego() {
+        return frmJuego;
+    }
 }
