@@ -5,49 +5,55 @@
 package View;
 
 import Controller.BoardManagerController;
-
+import Model.BoardManager;
 import Model.Player;
 import java.awt.Component;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Dering
  */
-public class FrmJuego extends javax.swing.JFrame implements Vista{
-    public JButton[][] botonesTablero;
-    private String player1Name;
-    private String player2Name;
-    private BoardManagerController controller;
-  
-    /**
-     * Creates new form FrmJuego
-     * @param name1
-     * @param name2
-     */
-    public FrmJuego(String name1, String name2) {
+    public class FrmJuego extends javax.swing.JFrame implements Vista{
+        public JButton[][] botonesTablero;
+        private String player1Name;
+        private String player2Name;
+        private BoardManagerController controller;
+
+        /**
+         * Creates new form FrmJuego
+         * @param name1
+         * @param name2
+         */
+        public FrmJuego(String name1, String name2) {
+        initComponents(); 
         this.player1Name = name1;
         this.player2Name = name2;
+        // Obtener la instancia Singleton de BoardManagerController
         controller = BoardManagerController.getInstance(this, this);
+        TxtTurno.setText(player1Name); // Asegúrate de que tienes un JTextField llamado TxtName1
+        TxtTurno.setText(player2Name);
         botonesTablero = new JButton[12][12];
-        initComponents();
-        
-        Component[] compo = jPanel2.getComponents();
-        int button = 0;
+
+         Component[] components = jPanel2.getComponents(); 
+
+        int boton = 0; 
 
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 12; j++) {
-                if (compo[button] instanceof JButton) {
-                    botonesTablero[i][j] = (JButton) compo[button];
-                    final int row = i;
-                    final int col = j;
-                    botonesTablero[i][j].addActionListener(e -> controller.hacerMovimiento(row, col));
-                    button++;
+                if (components[boton] instanceof JButton) {
+                    botonesTablero[i][j] = (JButton) components[boton];
+                    final int fila = i;
+                    final int columna = j;
+                    botonesTablero[i][j].addActionListener(e -> controller.move(fila, columna));
+                    boton++;
                 }
             }
         }
-        controller.updateBoard(); // Actualiza la visualización del tablero al inicio
+
+      controller.updateBoard();
     }
 
     private FrmJuego() {
@@ -60,7 +66,9 @@ public class FrmJuego extends javax.swing.JFrame implements Vista{
     
     public void UpdateShift(){
         Player playerCurrent = controller.getPlayerCurrent();
-        TxtTurno.setText("Turno de " + playerCurrent.getName());
+            // Si quieres mostrar los nombres directamente:
+    // Si tienes un método para obtener los nombres en la clase BoardManager:
+    TxtTurno.setText("Turno de " + (playerCurrent == controller.getPlayer1() ? player1Name : player2Name));
     }
     
     public void UpdateGameScore(){
@@ -442,14 +450,14 @@ public class FrmJuego extends javax.swing.JFrame implements Vista{
                 .addContainerGap())
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(TxtTurno, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel6))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(24, 24, 24)
-                        .addComponent(jButton145, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton145, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(TxtTurno, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -467,9 +475,9 @@ public class FrmJuego extends javax.swing.JFrame implements Vista{
                 .addComponent(jLabel5)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(12, 12, 12)
                 .addComponent(TxtTurno, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton145)
                 .addContainerGap(283, Short.MAX_VALUE))
         );
@@ -506,7 +514,17 @@ public class FrmJuego extends javax.swing.JFrame implements Vista{
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton145ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton145ActionPerformed
-
+    int option = JOptionPane.showInternalConfirmDialog(null, "¡Desea reiniciar el tablero?", "Advertencia", JOptionPane.YES_NO_OPTION);
+    if (option == JOptionPane.YES_OPTION) {
+        controller.reset();
+        controller.getBoardManager();
+        controller.updateBoard();
+        UpdateGameScore();
+        JOptionPane.showMessageDialog(this, "Tablero reiniciado", "Reinicio", JOptionPane.INFORMATION_MESSAGE);
+        UpdateShift();
+    } else {
+        showMessage("¡No se reinició el tablero!");
+    } 
     }//GEN-LAST:event_jButton145ActionPerformed
 
     /**

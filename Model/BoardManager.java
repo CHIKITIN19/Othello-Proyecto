@@ -5,6 +5,7 @@
 package Model;
 
 
+import Controller.BoardManagerController;
 import java.util.ArrayList;
 
 /**
@@ -12,42 +13,40 @@ import java.util.ArrayList;
  * @author sebas
  */
 public class BoardManager {
-    private static BoardManager instance;
     private Player player1;
     private Player player2;
     private Player currentPlayer;
     private Piece[][] board;
-    
-    public BoardManager() {
+    private BoardManagerController controller;
+
+    public BoardManager(BoardManagerController controller) {
+        this.controller = controller;
         board = new Piece[12][12];
-        player1 = new Player("Red");
-        player2 = new Player("Purple");
+        player1 = new Player("Red","Player 1");
+        player2 = new Player("Purple","Player2");
         currentPlayer = player1;
-        
+
         // Inicializar el tablero con las piezas iniciales
         board[5][5] = new Piece("Red");
         board[6][6] = new Piece("Red");
         board[5][6] = new Piece("Purple");
         board[6][5] = new Piece("Purple");
     }
-    
-    public static BoardManager getInstance() {
-        if (instance == null) {
-            instance = new BoardManager();
-        }
-        return instance;
-    }
 
-    public static void resetInstance() {
-        instance = null;
-    }
-    
     public Player getPlayer1() {
         return player1;
     }
 
+    public void setPlayer1(Player player1) {
+        this.player1 = player1;
+    }
+
     public Player getPlayer2() {
         return player2;
+    }
+
+    public void setPlayer2(Player player2) {
+        this.player2 = player2;
     }
 
     public Player getCurrentPlayer() {
@@ -62,7 +61,32 @@ public class BoardManager {
         return board;
     }
 
-    public boolean isValidMove(int row, int column) {
+
+    //Se valida captura de ficha de un jugador
+    //Metodo recursivo
+    private boolean validateCaptureRecursivo(int row, int column, int deltaRow, int deltaColumn, String playerColor, boolean foundOpponentPiece) {
+        int i = row + deltaRow;
+        int j = column + deltaColumn;
+
+        if (i < 0 || i >= 12 || j < 0 || j >= 12) {
+            return false;
+        }
+
+        if (board[i][j] == null) {
+            return false;
+        }
+
+        if (board[i][j].getColors().equals(currentPlayer.getColors())) {
+            return foundOpponentPiece;
+        } else {
+            foundOpponentPiece = true;
+        }
+
+        return validateCaptureRecursivo(i, j, deltaRow, deltaColumn, playerColor, foundOpponentPiece);
+    }
+    
+    //Verificar movimiento
+        public boolean isValidMove(int row, int column) {
         if (board[row][column] != null) {
             return false;
         }
@@ -70,7 +94,8 @@ public class BoardManager {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i == 0 && j == 0) continue;
-                if (validateCapture(row, column, i, j, currentPlayer.getColors(), false)) {
+                if (validateCaptureRecursivo(row, column, i, j, currentPlayer.getColors(), false)) {
+                   
                     return true;
                 }
             }
@@ -78,69 +103,64 @@ public class BoardManager {
         return false;
     }
 
-    public boolean validateCapture(int row, int column, int deltaRow, int deltaColumn, String playerColor, boolean foundOpponentPiece) {
-        int newRow = row + deltaRow;
-        int newColumn = column + deltaColumn;
-
-        if (newRow < 0 || newRow >= 12 || newColumn < 0 || newColumn >= 12) {
-            return false;
-        }
-        
-        if (board[newRow][newColumn] == null) {
-            return false;
-        }
-
-        if (board[newRow][newColumn].getColors().equals(playerColor)) {
-            return foundOpponentPiece;
-        } else {
-            foundOpponentPiece = true;
-        }
-
-        return validateCapture(newRow, newColumn, deltaRow, deltaColumn, playerColor, foundOpponentPiece);
-    }
-
+        //Coloca la ficha
     public void placePiece(int row, int column) {
         if (isValidMove(row, column)) {
             board[row][column] = new Piece(currentPlayer.getColors());
 
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
-                    if (i == 0 && j == 0) continue;
-                    if (validateCapture(row, column, i, j, currentPlayer.getColors(), false)) {
-                        makeMovements(row, column, i, j, currentPlayer.getColors());
+                    if (i == 0 && j == 0) {
+                        continue;
+                    }
+                    if (validateCaptureRecursivo(row, column, i, j, currentPlayer.getColors(), false)) {
+                        makeMovementsRecursivo(row, column, i, j, currentPlayer.getColors());
                     }
                 }
             }
-
             changeTurn();
         }
     }
 
-    private void makeMovements(int row, int column, int deltaRow, int deltaColumn, String playerColor) {
-        int newRow = row + deltaRow;
-        int newColumn = column + deltaColumn;
+    // Método Recursivo
+    private void makeMovementsRecursivo(int row, int column, int deltaRow, int deltaColumn, String playerColor) {
+        int i = row + deltaRow;
+        int j = column + deltaColumn;
 
-        while (!board[newRow][newColumn].getColors().equals(playerColor)) {
-            board[newRow][newColumn].FlipColors();
-            newRow += deltaRow;
-            newColumn += deltaColumn;
+        
+        if (i < 0 || i >= board.length || j < 0 || j >= board[i].length) {
+            return; 
         }
-    }
-
-    public int possibleMovement(String color) {
-        int count = 0;
-        for (int i = 0; i < 12; i++) {
-            for (int j = 0; j < 12; j++) {
-                if (isValidMove(i, j) && currentPlayer.getColors().equals(color)) {
-                    count++;
-                }
-            }
+        
+        if (board[i][j].getColors().equals(playerColor)) {
+            return; 
         }
-        return count;
+        
+        String nuevoColor = playerColor.equals("Purple") ? "Purple" : "Red";
+        controller.animationUpdatePiece(i, j, nuevoColor);
+        // Cambia el color en el tablero
+        board[i][j].FlipColors();
+        makeMovementsRecursivo(i, j, deltaRow, deltaColumn, playerColor);
     }
 
     public void changeTurn() {
         currentPlayer = (currentPlayer == player1) ? player2 : player1;
+    }
+
+    public int possibleMovement(String color) {
+        int movements = 0;
+
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                if (isValidMove(i, j)) {
+                    if (currentPlayer.getColors().equals(color)) {
+                        movements++;
+                    }
+                }
+            }
+        }
+
+        return movements;
     }
 
     public int countPlayer1Pieces() {
@@ -165,5 +185,9 @@ public class BoardManager {
             }
         }
         return count;
+    }
+
+    public void setController(BoardManagerController controller) {
+        this.controller = controller;
     }
 }
