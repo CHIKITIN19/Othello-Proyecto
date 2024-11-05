@@ -85,6 +85,25 @@ public class BoardManager {
         return evaluationPositionRecursivo(i, j, deltaRow, deltaColumn, playerColor, foundOpponentPiece);
     }
     
+        // Método Recursivo modificar fichas
+    private void updatePieceRecursivo(int row, int column, int deltaRow, int deltaColumn, String playerColor) {
+        int i = row + deltaRow;
+        int j = column + deltaColumn;
+
+        
+        if (i < 0 || i >= board.length || j < 0 || j >= board[i].length) {
+            return; 
+        }
+        
+        if (board[i][j].getColors().equals(playerColor)) {
+            return; 
+        }
+        
+        String nuevoColor = playerColor.equals("Purple") ? "Purple" : "Red";
+        controller.animationUpdatePiece(i, j, nuevoColor);
+        board[i][j].FlipColors();
+        updatePieceRecursivo(i, j, deltaRow, deltaColumn, playerColor);
+    }
     
         public boolean isValidMove(int row, int column) {
         if (board[row][column] != null) {
@@ -103,7 +122,7 @@ public class BoardManager {
         return false;
     }
 
-        //Coloca la ficha
+     //Pone la ficha
     public void placePiece(int row, int column) {
         if (isValidMove(row, column)) {
             board[row][column] = new Piece(currentPlayer.getColors());
@@ -120,26 +139,6 @@ public class BoardManager {
             }
             changeTurn();
         }
-    }
-
-    // Método Recursivo modificar fichas
-    private void updatePieceRecursivo(int row, int column, int deltaRow, int deltaColumn, String playerColor) {
-        int i = row + deltaRow;
-        int j = column + deltaColumn;
-
-        
-        if (i < 0 || i >= board.length || j < 0 || j >= board[i].length) {
-            return; 
-        }
-        
-        if (board[i][j].getColors().equals(playerColor)) {
-            return; 
-        }
-        
-        String nuevoColor = playerColor.equals("Purple") ? "Purple" : "Red";
-        controller.animationUpdatePiece(i, j, nuevoColor);
-        board[i][j].FlipColors();
-        updatePieceRecursivo(i, j, deltaRow, deltaColumn, playerColor);
     }
 
     public void changeTurn() {

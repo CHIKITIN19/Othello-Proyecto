@@ -65,7 +65,7 @@ public class AnimationPiece implements Runnable {
                 SwingUtilities.invokeLater(() -> boton.setIcon(iconoFinal));
                 Thread.sleep(400); 
             }
-
+            
             controller.getBoardManager().getBoard()[fila][columna].setColors(colorFinal);
             boton.putClientProperty("enAnimacion", false); // Finalizar la animación
 

@@ -19,7 +19,7 @@ public class Piece {
         return colors;
     }
     
-    //Metodo para voltear color de las fichas
+   
     public void FlipColors(){
         if(colors.equals("Red")){
             colors = "Purple";

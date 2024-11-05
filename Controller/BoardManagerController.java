@@ -109,41 +109,41 @@ public class BoardManagerController {
     }
 }
 
-public synchronized void updateBoard() {
-    Piece[][] currentBoard = boardManager.getBoard();
-    ImageIcon redPieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_1.png"));
-    ImageIcon purplePieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_2.png"));
-    Image redImage = redPieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-    Image purpleImage = purplePieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-    ImageIcon redPiece = new ImageIcon(redImage);
-    ImageIcon purplePiece = new ImageIcon(purpleImage);
-    
-    for (int i = 0; i < 12; i++) {
-        for (int j = 0; j < 12; j++) {
-            JButton boton = frmJuego.botones[i][j];
-            boton.setBackground(Color.WHITE); 
-        }
-    }
+    public void updateBoard() {
+        Piece[][] currentBoard = boardManager.getBoard();
+        ImageIcon redPieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_1.png"));
+        ImageIcon purplePieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_2.png"));
+        Image redImage = redPieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        Image purpleImage = purplePieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        ImageIcon redPiece = new ImageIcon(redImage);
+        ImageIcon purplePiece = new ImageIcon(purpleImage);
 
-    for (int i = 0; i < 12; i++) {
-        for (int j = 0; j < 12; j++) {
-            JButton boton = frmJuego.botones[i][j];
-            if (currentBoard[i][j] != null) {
-                if (currentBoard[i][j].getColors().equals("Red")) {
-                    boton.setIcon(redPiece);
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                JButton boton = frmJuego.botones[i][j];
+                boton.setBackground(Color.WHITE); 
+            }
+        }
+
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                JButton boton = frmJuego.botones[i][j];
+                if (currentBoard[i][j] != null) {
+                    if (currentBoard[i][j].getColors().equals("Red")) {
+                        boton.setIcon(redPiece);
+                    } else {
+                        boton.setIcon(purplePiece);
+                    }
                 } else {
-                    boton.setIcon(purplePiece);
-                }
-            } else {
-                boton.setIcon(null); 
-                if (boardManager.isValidMove(i, j)) {
-                    boton.setBackground(Color.BLUE);
-                } else {
-                    boton.setBackground(Color.GREEN); 
+                    boton.setIcon(null); 
+                    if (boardManager.isValidMove(i, j)) {
+                        boton.setBackground(Color.BLUE);
+                    } else {
+                        boton.setBackground(Color.GREEN); 
+                    }
                 }
             }
         }
-    }
 
     frmJuego.UpdateShift();
     frmJuego.UpdateGameScore();
@@ -161,14 +161,14 @@ public synchronized void updateBoard() {
     }
     public void reset() {
         System.out.println("Reiniciando el tablero...");
-        boardManager.resetBoard(); // Reiniciar el estado del BoardManager
+        boardManager.resetBoard();
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 12; j++) {
                 frmJuego.botones[i][j].setIcon(null); 
                 frmJuego.botones[i][j].setBackground(Color.WHITE);
             }
         }
-        updateBoard(); // Actualizar el tablero después de reiniciar
+        updateBoard(); 
         System.out.println("Tablero reiniciado.");
     }
 }
