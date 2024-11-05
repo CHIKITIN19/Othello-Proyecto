@@ -14,8 +14,12 @@ import javax.swing.SwingUtilities;
  *
  * @author 9567
  */
-public class AnimationPiece {
+public class AnimationPiece implements Runnable {
     private final BoardManagerController controller;
+    private final int fila;
+    private final int columna;
+    private final String colorFinal;
+
     private final String[] secuenciaPurple = {
         "/IMG/Ficha_3.png",
         "/IMG/Ficha_3.png",
@@ -23,34 +27,35 @@ public class AnimationPiece {
     };
 
     private final String[] secuenciaRoja = {
-      "/IMG/Ficha_4.png",
+        "/IMG/Ficha_4.png",
         "/IMG/Ficha_4.png",
         "/IMG/Ficha_1.png"
     };
 
-    public AnimationPiece(BoardManagerController controller) {
+    public AnimationPiece(BoardManagerController controller, int fila, int columna, String colorFinal) {
         this.controller = controller;
+        this.fila = fila;
+        this.columna = columna;
+        this.colorFinal = colorFinal;
     }
-    public void animationUpdatePiece(int fila, int columna, String colorFinal) {
-    new Thread(() -> {
-        try {
-            JButton boton = controller.getFrmJuego().botonesTablero[fila][columna];
-            boton.putClientProperty("enAnimacion", true); // Iniciar la animación
 
-            // Verificamos el color de la ficha en el tablero antes de la animación
+    @Override
+    public void run() {
+        try {
+            JButton boton = controller.getFrmJuego().botones[fila][columna];
+            boton.putClientProperty("enAnimacion", true);
+
             String colorActual = controller.getBoardManager().getBoard()[fila][columna].getColors();
             String[] secuencia;
 
-            // Seleccionamos la secuencia correcta de animación
             if (colorActual.equals("Red") && colorFinal.equals("Purple")) {
-                secuencia = secuenciaPurple; // Animación de ficha roja
+                secuencia = secuenciaPurple; 
             } else if (colorActual.equals("Purple") && colorFinal.equals("Red")) {
-                secuencia = secuenciaRoja; // Animación de ficha negra
+                secuencia = secuenciaRoja; 
             } else {
-                secuencia = colorFinal.equals("Purple") ? secuenciaPurple: secuenciaRoja;
+                secuencia = colorFinal.equals("Purple") ? secuenciaPurple : secuenciaRoja;
             }
 
-            // Ejecución de la animación
             for (String rutaImagen : secuencia) {
                 ImageIcon iconoOriginal = new ImageIcon(getClass().getResource(rutaImagen));
                 Image imagen = iconoOriginal.getImage();
@@ -58,20 +63,15 @@ public class AnimationPiece {
                 ImageIcon iconoFinal = new ImageIcon(nuevaImagen);
 
                 SwingUtilities.invokeLater(() -> boton.setIcon(iconoFinal));
-                Thread.sleep(400); // Tiempo entre cada cambio de imagen
+                Thread.sleep(400); 
             }
 
-
-
-            // Actualizar el color final de la ficha en el tablero
             controller.getBoardManager().getBoard()[fila][columna].setColors(colorFinal);
             boton.putClientProperty("enAnimacion", false); // Finalizar la animación
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }).start();
-}
-
+    }
 }
 

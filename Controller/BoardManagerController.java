@@ -21,17 +21,16 @@ public class BoardManagerController {
     private AnimationPiece animation;
 
     
-    private BoardManagerController(FrmJuego frmJuego, Vista view) {
+    private BoardManagerController(FrmJuego frmJuego, Vista view, String player1Name, String player2Name) {
         this.frmJuego = frmJuego; 
         this.view = view;
-        this.boardManager = new BoardManager(this);
-        this.animation = new AnimationPiece(this);
+        boardManager = new BoardManager(this, player1Name, player2Name);
     }
 
     
-    public static BoardManagerController getInstance(FrmJuego frmJuego, Vista view) {
+    public static BoardManagerController getInstance(FrmJuego frmJuego, Vista view, String player1Name, String player2Name) {
         if (instance == null) {
-            instance = new BoardManagerController(frmJuego, view);
+            instance = new BoardManagerController(frmJuego, view, player1Name, player2Name);
         }
         return instance;
     }
@@ -93,7 +92,10 @@ public class BoardManagerController {
                 updateBoard();
                 frmJuego.UpdateShift();
                 frmJuego.UpdateGameScore();
-                if (boardManager.possibleMovement(boardManager.getCurrentPlayer().getColors()) == 0) {
+
+                if (boardManager.possibleMovement(boardManager.getPlayer1().getColors()) == 0 &&
+                    boardManager.possibleMovement(boardManager.getPlayer2().getColors()) == 0) {
+
                     Player ganador = setWinner();
                     if (ganador != null) {
                         view.show(ganador.getName() + " ha ganado");
@@ -103,45 +105,55 @@ public class BoardManagerController {
                 }
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+public synchronized void updateBoard() {
+    Piece[][] currentBoard = boardManager.getBoard();
+    ImageIcon redPieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_1.png"));
+    ImageIcon purplePieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_2.png"));
+    Image redImage = redPieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+    Image purpleImage = purplePieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+    ImageIcon redPiece = new ImageIcon(redImage);
+    ImageIcon purplePiece = new ImageIcon(purpleImage);
+    
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++) {
+            JButton boton = frmJuego.botones[i][j];
+            boton.setBackground(Color.WHITE); 
         }
     }
 
-    public synchronized void updateBoard() {
-        Piece[][] currentBoard = boardManager.getBoard();
-        ImageIcon redPieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_1.png"));
-        ImageIcon purplePieceIcon = new ImageIcon(getClass().getResource("/IMG/Ficha_2.png"));
-        Image redImage = redPieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        Image purpleImage = purplePieceIcon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        ImageIcon redPiece = new ImageIcon(redImage);
-        ImageIcon purplePiece = new ImageIcon(purpleImage);
-
-        for (int i = 0; i < 12; i++) {
-            for (int j = 0; j < 12; j++) {
-                JButton boton = frmJuego.botonesTablero[i][j];
-                if (currentBoard[i][j] != null) {
-                    if (currentBoard[i][j].getColors().equals("Red")) {
-                        boton.setIcon(redPiece);
-                    } else {
-                        boton.setIcon(purplePiece);
-                    }
+    for (int i = 0; i < 12; i++) {
+        for (int j = 0; j < 12; j++) {
+            JButton boton = frmJuego.botones[i][j];
+            if (currentBoard[i][j] != null) {
+                if (currentBoard[i][j].getColors().equals("Red")) {
+                    boton.setIcon(redPiece);
                 } else {
-                    boton.setIcon(null);
-                    if (boardManager.isValidMove(i, j)) {
-                        boton.setBackground(Color.BLUE);
-                    } else {
-                        boton.setBackground(Color.GREEN);
-                    }
+                    boton.setIcon(purplePiece);
+                }
+            } else {
+                boton.setIcon(null); 
+                if (boardManager.isValidMove(i, j)) {
+                    boton.setBackground(Color.BLUE);
+                } else {
+                    boton.setBackground(Color.GREEN); 
                 }
             }
         }
-
-        frmJuego.UpdateShift();
-        frmJuego.UpdateGameScore();
     }
 
+    frmJuego.UpdateShift();
+    frmJuego.UpdateGameScore();
+}
+
+
     public void animationUpdatePiece(int fila, int columna, String colorFinal) {
-        animation.animationUpdatePiece(fila, columna, colorFinal);
+        
+        AnimationPiece animation = new AnimationPiece(this, fila, columna, colorFinal);
+        new Thread(animation).start();
     }
 
     public FrmJuego getFrmJuego() {
@@ -152,8 +164,8 @@ public class BoardManagerController {
         boardManager.resetBoard(); // Reiniciar el estado del BoardManager
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 12; j++) {
-                frmJuego.botonesTablero[i][j].setIcon(null); 
-                frmJuego.botonesTablero[i][j].setBackground(Color.WHITE);
+                frmJuego.botones[i][j].setIcon(null); 
+                frmJuego.botones[i][j].setBackground(Color.WHITE);
             }
         }
         updateBoard(); // Actualizar el tablero después de reiniciar

@@ -19,14 +19,14 @@ public class BoardManager {
     private Piece[][] board;
     private BoardManagerController controller;
 
-    public BoardManager(BoardManagerController controller) {
+    public BoardManager(BoardManagerController controller, String player1Name, String player2Name) {
         this.controller = controller;
         board = new Piece[12][12];
-        player1 = new Player("Red","Player 1");
-        player2 = new Player("Purple","Player2");
+        player1 = new Player("Red", player1Name);
+        player2 = new Player("Purple", player2Name);
         currentPlayer = player1;
 
-        // Inicializar el tablero con las piezas iniciales
+
         board[5][5] = new Piece("Red");
         board[6][6] = new Piece("Red");
         board[5][6] = new Piece("Purple");
@@ -62,9 +62,9 @@ public class BoardManager {
     }
 
 
-    //Se valida captura de ficha de un jugador
-    //Metodo recursivo
-    private boolean validateCaptureRecursivo(int row, int column, int deltaRow, int deltaColumn, String playerColor, boolean foundOpponentPiece) {
+    
+    //Metodo recursivo evaluar posiciones
+    private boolean evaluationPositionRecursivo(int row, int column, int deltaRow, int deltaColumn, String playerColor, boolean foundOpponentPiece) {
         int i = row + deltaRow;
         int j = column + deltaColumn;
 
@@ -82,10 +82,10 @@ public class BoardManager {
             foundOpponentPiece = true;
         }
 
-        return validateCaptureRecursivo(i, j, deltaRow, deltaColumn, playerColor, foundOpponentPiece);
+        return evaluationPositionRecursivo(i, j, deltaRow, deltaColumn, playerColor, foundOpponentPiece);
     }
     
-    //Verificar movimiento
+    
         public boolean isValidMove(int row, int column) {
         if (board[row][column] != null) {
             return false;
@@ -94,7 +94,7 @@ public class BoardManager {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 if (i == 0 && j == 0) continue;
-                if (validateCaptureRecursivo(row, column, i, j, currentPlayer.getColors(), false)) {
+                if (evaluationPositionRecursivo(row, column, i, j, currentPlayer.getColors(), false)) {
                    
                     return true;
                 }
@@ -113,8 +113,8 @@ public class BoardManager {
                     if (i == 0 && j == 0) {
                         continue;
                     }
-                    if (validateCaptureRecursivo(row, column, i, j, currentPlayer.getColors(), false)) {
-                        makeMovementsRecursivo(row, column, i, j, currentPlayer.getColors());
+                    if (evaluationPositionRecursivo(row, column, i, j, currentPlayer.getColors(), false)) {
+                        updatePieceRecursivo(row, column, i, j, currentPlayer.getColors());
                     }
                 }
             }
@@ -122,8 +122,8 @@ public class BoardManager {
         }
     }
 
-    // Método Recursivo
-    private void makeMovementsRecursivo(int row, int column, int deltaRow, int deltaColumn, String playerColor) {
+    // Método Recursivo modificar fichas
+    private void updatePieceRecursivo(int row, int column, int deltaRow, int deltaColumn, String playerColor) {
         int i = row + deltaRow;
         int j = column + deltaColumn;
 
@@ -138,9 +138,8 @@ public class BoardManager {
         
         String nuevoColor = playerColor.equals("Purple") ? "Purple" : "Red";
         controller.animationUpdatePiece(i, j, nuevoColor);
-        // Cambia el color en el tablero
         board[i][j].FlipColors();
-        makeMovementsRecursivo(i, j, deltaRow, deltaColumn, playerColor);
+        updatePieceRecursivo(i, j, deltaRow, deltaColumn, playerColor);
     }
 
     public void changeTurn() {

@@ -17,7 +17,7 @@ import javax.swing.SwingUtilities;
  * @author Dering
  */
     public class FrmJuego extends javax.swing.JFrame implements Vista{
-        public JButton[][] botonesTablero;
+        public JButton[][] botones;
         private String player1Name;
         private String player2Name;
         private BoardManagerController controller;
@@ -31,30 +31,34 @@ import javax.swing.SwingUtilities;
         initComponents(); 
         this.player1Name = name1;
         this.player2Name = name2;
-        controller = BoardManagerController.getInstance(this, this);
+        controller = BoardManagerController.getInstance(this, this, player1Name, player2Name);
         TxtTurno.setText(player1Name);
         TxtTurno.setText(player2Name);
-        botonesTablero = new JButton[12][12];
+        botones = new JButton[12][12];
 
-         Component[] components = jPanel2.getComponents(); 
+      initializeButtons();
+      controller.updateBoard();
+    }
+
+        private void initializeButtons() {
+        botones = new JButton[12][12];
+        Component[] components = jPanel2.getComponents(); 
 
         int boton = 0; 
 
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 12; j++) {
                 if (components[boton] instanceof JButton) {
-                    botonesTablero[i][j] = (JButton) components[boton];
+                    botones[i][j] = (JButton) components[boton];
                     final int fila = i;
                     final int columna = j;
-                    botonesTablero[i][j].addActionListener(e -> controller.move(fila, columna));
+                    botones[i][j].addActionListener(e -> controller.move(fila, columna));
                     boton++;
                 }
             }
-        }
-
-      controller.updateBoard();
+        
     }
-
+}
     private FrmJuego() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
@@ -724,7 +728,7 @@ import javax.swing.SwingUtilities;
     }
 
     @Override
-    public void show(Object object) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void show(String message) {
+    JOptionPane.showMessageDialog(this, message, "Resultado del Juego", JOptionPane.INFORMATION_MESSAGE);
     }
 }
