@@ -187,6 +187,24 @@ public class BoardManager {
         return count;
     }
 
+    public void resetBoard() {
+        this.board = new Piece[12][12];
+        for (int i = 5; i <= 6; i++) {
+            for (int j = 5; j <= 6; j++) {
+                if (i == 5 && j == 5) {
+                    this.board[i][j] = new Piece("Red");
+                } else if (i == 6 && j == 6) {
+                    this.board[i][j] = new Piece("Red");
+                } else if (i == 5 && j == 6) {
+                    this.board[i][j] = new Piece("Purple");
+                } else if (i == 6 && j == 5) {
+                    this.board[i][j] = new Piece("Purple");
+                }
+            }
+        }
+        this.currentPlayer = player1;
+    }
+    
     public void setController(BoardManagerController controller) {
         this.controller = controller;
     }

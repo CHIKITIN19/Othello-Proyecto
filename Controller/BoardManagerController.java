@@ -150,12 +150,15 @@ public class BoardManagerController {
         return frmJuego;
     }
     public void reset() {
-    for (int i = 0; i < 12; i++) {
-        for (int j = 0; j < 12; j++) {
-            frmJuego.botonesTablero[i][j].setIcon(null); 
-            frmJuego.botonesTablero[i][j].setBackground(Color.WHITE);
-            
+        System.out.println("Reiniciando el tablero...");
+        boardManager.resetBoard(); // Reiniciar el estado del BoardManager
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
+                frmJuego.botonesTablero[i][j].setIcon(null); 
+                frmJuego.botonesTablero[i][j].setBackground(Color.WHITE);
+            }
         }
+        updateBoard(); // Actualizar el tablero después de reiniciar
+        System.out.println("Tablero reiniciado.");
     }
-}
 }

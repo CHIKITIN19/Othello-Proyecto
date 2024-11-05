@@ -66,9 +66,7 @@ import javax.swing.SwingUtilities;
     
     public void UpdateShift(){
         Player playerCurrent = controller.getPlayerCurrent();
-            // Si quieres mostrar los nombres directamente:
-    // Si tienes un método para obtener los nombres en la clase BoardManager:
-    TxtTurno.setText("Turno de " + (playerCurrent == controller.getPlayer1() ? player1Name : player2Name));
+        TxtTurno.setText("Turno de " + (playerCurrent == controller.getPlayer1() ? player1Name : player2Name));
     }
     
     public void UpdateGameScore(){
@@ -454,10 +452,10 @@ import javax.swing.SwingUtilities;
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel6))
+                    .addComponent(TxtTurno, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(24, 24, 24)
-                        .addComponent(jButton145, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(TxtTurno, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jButton145, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -514,17 +512,18 @@ import javax.swing.SwingUtilities;
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton145ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton145ActionPerformed
-    int option = JOptionPane.showInternalConfirmDialog(null, "¡Desea reiniciar el tablero?", "Advertencia", JOptionPane.YES_NO_OPTION);
-    if (option == JOptionPane.YES_OPTION) {
-        controller.reset();
-        controller.getBoardManager();
-        controller.updateBoard();
-        UpdateGameScore();
-        JOptionPane.showMessageDialog(this, "Tablero reiniciado", "Reinicio", JOptionPane.INFORMATION_MESSAGE);
-        UpdateShift();
-    } else {
-        showMessage("¡No se reinició el tablero!");
-    } 
+        int option = JOptionPane.showInternalConfirmDialog(null, "¡Desea reiniciar el tablero?", 
+            "Advertencia", JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.YES_OPTION) {
+            controller.reset();
+            controller.updateBoard();
+            UpdateGameScore();
+            JOptionPane.showMessageDialog(this, "Tablero reiniciado", "Reinicio",
+                JOptionPane.INFORMATION_MESSAGE);
+            UpdateShift();
+        } else {
+            showMessage("¡No se reinició el tablero!");
+        } 
     }//GEN-LAST:event_jButton145ActionPerformed
 
     /**
