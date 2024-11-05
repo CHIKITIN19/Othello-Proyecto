@@ -14,21 +14,21 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 public class BoardManagerController {
-    private static BoardManagerController instance; // Instancia estática
+    private static BoardManagerController instance; 
     private Vista view;
     private BoardManager boardManager;
     private FrmJuego frmJuego;
     private AnimationPiece animation;
 
-    // Constructor privado para prevenir instanciación desde fuera de la clase
+    
     private BoardManagerController(FrmJuego frmJuego, Vista view) {
-        this.frmJuego = frmJuego; // Asegúrate de asignar frmJuego aquí
+        this.frmJuego = frmJuego; 
         this.view = view;
-        this.boardManager = new BoardManager(this); // Crear nueva instancia de BoardManager
+        this.boardManager = new BoardManager(this);
         this.animation = new AnimationPiece(this);
     }
 
-    // Método para obtener la instancia Singleton
+    
     public static BoardManagerController getInstance(FrmJuego frmJuego, Vista view) {
         if (instance == null) {
             instance = new BoardManagerController(frmJuego, view);
@@ -63,7 +63,6 @@ public class BoardManagerController {
     }
 
     public void createBoard() {
-        // No es necesario crear una nueva instancia de BoardManager
         updateBoard();
     }
 
@@ -121,7 +120,6 @@ public class BoardManagerController {
             for (int j = 0; j < 12; j++) {
                 JButton boton = frmJuego.botonesTablero[i][j];
                 if (currentBoard[i][j] != null) {
-                    // Asigna el ícono de la pieza correspondiente
                     if (currentBoard[i][j].getColors().equals("Red")) {
                         boton.setIcon(redPiece);
                     } else {

@@ -31,9 +31,8 @@ import javax.swing.SwingUtilities;
         initComponents(); 
         this.player1Name = name1;
         this.player2Name = name2;
-        // Obtener la instancia Singleton de BoardManagerController
         controller = BoardManagerController.getInstance(this, this);
-        TxtTurno.setText(player1Name); // Asegúrate de que tienes un JTextField llamado TxtName1
+        TxtTurno.setText(player1Name);
         TxtTurno.setText(player2Name);
         botonesTablero = new JButton[12][12];
 
@@ -65,9 +64,7 @@ import javax.swing.SwingUtilities;
     
     
     public void UpdateShift(){
-        Player playerCurrent = controller.getPlayerCurrent();
-            // Si quieres mostrar los nombres directamente:
-    // Si tienes un método para obtener los nombres en la clase BoardManager:
+    Player playerCurrent = controller.getPlayerCurrent();
     TxtTurno.setText("Turno de " + (playerCurrent == controller.getPlayer1() ? player1Name : player2Name));
     }
     
